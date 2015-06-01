@@ -1,0 +1,245 @@
+@(username: String)
+
+@admin("Пользователи", username,  2) {
+    <script type="text/javascript" src ='@routes.Assets.at("javascripts/admin_users.js")'></script>
+    <h2 class="sub-header">
+        <a data-toggle="collapse" href="#formAddUser" aria-expanded="false" aria-controls="formAddUser">
+            Добавить пользователя
+        </a> (<a data-toggle="collapse" href="#formAddUserMany" aria-expanded="false" aria-controls="formAddUserMany">список</a>)
+    </h2>
+
+    <div style="max-width: 350px;" class="collapse" id="formAddUser">
+        <div class="form-group">
+            <label for="login">Логин пользователя</label>
+            <input data-bind="textInput: newUserLogin" type="text" class="form-control" id="login" placeholder="Логин">
+        </div>
+        <div class="form-group">
+            <label for="pass">Пароль</label>
+            <input data-bind="textInput: newUserPass" type="password" class="form-control" id="pass" placeholder="Пароль">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Личные данные</label>
+            <input data-bind="textInput: newUserLastName" type="text" class="form-control" id="lastName" placeholder="Фамилия">
+            <input data-bind="textInput: newUserFirstName" type="text" class="form-control" id="firstName" placeholder="Имя">
+        </div>
+        <div class="form-group">
+            <label for="lastame">Место учебы </label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <select data-bind="options: faculties, value: selectedFaculty" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Роль пользователя</label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <select data-bind="options: roles, value: selectedRole" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label><input type="checkbox" data-bind="checked: newUserStatus" checked> Активен</label>
+            </div>
+        </div>
+        <button class="btn btn-default" data-bind="click: addUser">Добавить</button>
+    </div>
+
+    <div style="max-width: 650px;" class="collapse" id="formAddUserMany">
+        <h2>Добавить списком</h2>
+        <div class="form-group">
+            <label for="names">Список</label>
+            <label for="names">Фамилия Имя; Фамилия Имя;...</label>
+            <textarea data-bind="textInput: newUsers" class="form-control" id="names" placeholder="Фамилия Имя; Фамилия Имя;..." rows="10"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="lastame">Место учебы </label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <select data-bind="options: faculties, value: selectedFaculty" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Роль пользователей </label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <select data-bind="options: roles, value: selectedRole" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label><input type="checkbox" data-bind="checked: newUserStatus" checked> Активны</label>
+            </div>
+        </div>
+        <button class="btn btn-default" data-bind="click: addUserMany">Добавить пользователей</button>
+
+        <div class="form-group" data-bind="visible: newUsersListBOOL">
+            <label for="list">Добавленные пользователи</label>
+            <textarea data-bind="text: newUsersList" class="form-control" id="list" rows="10" readonly></textarea>
+        </div>
+    </div>
+
+    <h1 class="page-header">Пользователи <small>Всего: </small> <small data-bind="text: countUsers"></small><small> | Показано на странице: </small>
+        <small data-bind="text: usersList().length"></small></h1>
+
+    <form class="form-inline">
+        <div class="input-group">
+            <input style="max-width: 250px;" type="text" class="form-control" placeholder="Поиск..." data-bind="textInput: search">
+        </div>
+        <div class="input-group" style = "margin-left: 20px;">
+            <button data-bind="click: reloadUsers" class="btn btn-default">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Обновить
+            </button>
+        </div>
+
+        <div class="input-group" style = "margin-left: 20px;">
+            <span class="input-group-addon">Страница </span>
+            <select class="form-control" aria-describedby="basic-addon1"
+            data-bind="value: currentPage, options: pages, valueAllowUnset: true"></select>
+            <span class="input-group-addon">из <strong data-bind="text: totalPages"></strong></span>
+        </div>
+
+        <div class="input-group" style = "margin-left: 20px;">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1"
+                data-toggle="tooltip" data-placement="top" title="" data-original-title="Отображать по...">
+                    <span class="glyphicon glyphicon-list" aria-hidden="true"></span></span>
+                <select class="form-control" aria-describedby="basic-addon1" data-bind="selectedOptions: pageSize">
+                    <option value="10">10</option>
+                    <option selected value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="300">300</option>
+                    <option value="300">500</option>
+                </select>
+            </div>
+        </div>
+        <div class="input-group" style = "margin-left: 20px;">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1"
+                data-toggle="tooltip" data-placement="top" title="" data-original-title="Сортировка">
+                    <span class="glyphicon glyphicon-sort" aria-hidden="true"></span></span>
+                <select class="form-control" aria-describedby="basic-addon1" data-bind="selectedOptions: sorter">
+                    <option selected value="userReg">Дата регистрации ↓</option>
+                    <option value="userReg desc">Дата регистрации ↑</option>
+                    <option value="login">Логин ↓</option>
+                    <option value="login desc">Логин ↑</option>
+                    <option value="userLastName">Фамилия ↓</option>
+                    <option value="userLastName desc">Фамилия ↑</option>
+                    <option value="userFirstName desc">Имя ↑</option>
+                    <option value="userFirstName">Имя ↓</option>
+                    <option value="userFaculty desc">Место учебы ↑</option>
+                    <option value="userFaculty">Место учебы ↓</option>
+                    <option value="userStip desc">Стипендия ↑</option>
+                    <option value="userStip">Стипендия ↓</option>
+                    <option value="achievements desc">Дост. ↑</option>
+                    <option value="achCount">Дост. ↓</option>
+                    <option value="userStatus desc">Статус ↑</option>
+                    <option value="userStatus">Статус ↓</option>
+                    <option value="userId desc">id ↑</option>
+                    <option value="userId">id ↓</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group pull-right" style="max-width: 110px">
+            <div class="input-group">
+                <input type="number" class="form-control" placeholder="n" data-bind="textInput: ct">
+                <span class="input-group-btn">
+                    <button class="btn btn-warning" type="button" data-bind="click: generator"
+                    data-toggle="tooltip" data-placement="top" title="" data-original-title="Добавить n случаных пользователей">
+                        <span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID
+                    </th>
+                    <th>Логин
+                    </th>
+                    <th>Фамилия
+                    </th>
+                    <th>Имя
+                    </th>
+                    <th>Группа
+                    </th>
+                    <th>Место учебы
+                    </th>
+                    <th>Дата регистрации
+                    </th>
+                    <th>Стипендия
+                    </th>
+                    <th>Дост.
+                    </th>
+                    <th>Статус
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: usersList">
+                <td data-bind="text: userId"></td>
+                <td data-bind="text: userLogin"></td>
+                <td data-bind="text: userLastName"></td>
+                <td data-bind="text: userFirstName"></td>
+                <td data-bind="text: userRole"></td>
+                <td data-bind="text: userFaculty"></td>
+                <td data-bind="text: userReg"></td>
+                <td data-bind="text: userStip"></td>
+                <td data-bind="text: achCount"></td>
+                <td data-bind="text: userStatus"></td>
+                <td>
+                    <a href="#" style="color : darkblue ;" data-bind="click: $root.loadOneUser">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    </a>
+                </td>
+                <td>
+                    <a href="#" style="color : darkred ;" data-bind="click: $root.removeUser">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </a>
+                </td>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="editUser" tabindex="-1" role="dialog" aria-labelledby="editUserLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                    <h4 class="modal-title" id="editUserachLabel">Редактирование пользователя</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="login">Логин пользователя</label>
+                        <input data-bind="textInput: editUserLogin" type="text" class="form-control" id="login" placeholder="Логин">
+                    </div>
+                    <div class="form-group">
+                        <label for="pass">Пароль</label>
+                        <input data-bind="textInput: editUserPass" type="text" class="form-control" id="pass" placeholder="Пароль">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Личные данные</label>
+                        <input data-bind="textInput: editUserLastName" type="text" class="form-control" id="lastName" placeholder="Фамилия">
+                        <input data-bind="textInput: editUserFirstName" type="text" class="form-control" id="firstName" placeholder="Имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastame">Стипендия </label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                        <select data-bind="options: stips, value: editUserStip" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastame">Место учебы </label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                        <select data-bind="options: faculties, value: editUserFaculty" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Роль пользователя</label> <button data-bind="click: getUtil" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                        <select data-bind="options: roles, value: editUserRole" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: editUserStatus"> Активен</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+                    <button class="btn btn-success" data-dismiss="modal" data-bind="click: editUser">Сохранить</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+}

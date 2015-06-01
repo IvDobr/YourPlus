@@ -1,0 +1,72 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET           /                                 controllers.Authorization.index()
+
+# Secure
+POST          /login                            controllers.Authorization.logIn()
+GET           /logout                           controllers.Authorization.logOut()
+
+# Users
+GET           /cabinet                          controllers.Application.student()
+
+# API
+PUT           /api/stip                         controllers.API.setStipJSON()
+GET           /api/stip                         controllers.API.getStipJSON()
+
+GET           /api/userinfo                     controllers.API.getUserInfoJSON()
+
+GET           /api/achievements                 controllers.API.getAllAchievsJSON(pageSize: Int ?=0, currentPage: Int ?=0, sortby: String ?="", search: String ?="")
+PUT           /api/achievements                 controllers.API.newAchievJSON()
+POST          /api/achievements                 controllers.API.editAchievJSON()
+DELETE        /api/achievements                 controllers.API.deleteAchievJSON()
+
+# Admin API
+GET           /admin/api/gen_information        controllers.Admin_API.getGeneralInfoJSON()
+
+GET           /admin/api/util_titles            controllers.Admin_API.getUtilTitlesJSON()
+GET           /admin/api/users                  controllers.Admin_API.getAllUsersJSON(pageSize: Int ?=0, currentPage: Int ?=0, sortby: String ?="", search: String ?="")
+POST          /admin/api/user                   controllers.Admin_API.editUserJSON()
+PUT           /admin/api/user                   controllers.Admin_API.addUserJSON()
+PUT           /admin/api/users                  controllers.Admin_API.addUserManyJSON()
+DELETE        /admin/api/user                   controllers.Admin_API.removeUserJSON()
+
+GET           /admin/api/faculty                controllers.Admin_API.getAllFacultiesJSON(search: String ?="")
+PUT           /admin/api/faculty                controllers.Admin_API.addFacultyJSON()
+POST          /admin/api/faculty                controllers.Admin_API.editFacultyJSON()
+DELETE        /admin/api/faculty                controllers.Admin_API.removeFacultyJSON()
+
+GET           /admin/api/category               controllers.Admin_API.getAllCategoriesJSON(search: String ?="")
+PUT           /admin/api/category               controllers.Admin_API.addCategoryJSON()
+POST          /admin/api/category               controllers.Admin_API.editCategoryJSON()
+DELETE        /admin/api/category               controllers.Admin_API.removeCategoryJSON()
+
+GET           /admin/api/role                   controllers.Admin_API.getAllRolesJSON(search: String ?="")
+PUT           /admin/api/role                   controllers.Admin_API.addRoleJSON()
+POST          /admin/api/role                   controllers.Admin_API.editRoleJSON()
+DELETE        /admin/api/role                   controllers.Admin_API.removeRoleJSON()
+
+GET           /admin/api/subcat                 controllers.Admin_API.getAllSubCatsJSON(search: String ?="")
+PUT           /admin/api/subcat                 controllers.Admin_API.addSubCatJSON()
+POST          /admin/api/subcat                 controllers.Admin_API.editSubCatJSON()
+DELETE        /admin/api/subcat                 controllers.Admin_API.removeSubCatJSON()
+
+# Admin
+GET           /admin                            controllers.Application.admin()
+GET           /admin/                           controllers.Application.admin()
+GET           /admin/:page                      controllers.Application.dashboard(page)
+
+# jsRoutes
+GET           /api/jsRoutes                     controllers.API.jsRoutes()
+GET           /admin/api/jsRoutes               controllers.Admin_API.jsRoutes()
+
+# Map static resources from the /public folder to the /assets URL path
+GET           /assets/*file                     controllers.Assets.at(path="/public", file)
+
+# Testing
+GET           /api/bender                       controllers.API.checkBenderJSON()
+GET           /generator                        controllers.API.generateAches(count: Int ?=0)
+GET           /delAches                         controllers.API.delAches()
+GET           /admin/api/generator              controllers.Admin_API.generateUsers(count: Int ?=0)

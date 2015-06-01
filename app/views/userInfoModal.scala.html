@@ -1,0 +1,41 @@
+<script xmlns="http://www.w3.org/1999/html">$ ( '#user_profile' ).on ( 'shown.bs.modal', function ( ) {
+$ ( '#myInput' ).focus ( )
+} )
+</script>
+<div class="modal fade" id="user_profile" tabindex="-1" role="dialog" aria-labelledby="user_profileLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                <h4 class="modal-title" id="user_profileLabel">Профиль</h4>
+            </div>
+            <div class="modal-body">
+                <div style="display : inline-block"><h1><strong><span data-bind="text: meName"></span></strong> <small data-bind="visible: meStatus">Активен</small></h1></div>
+                <br> <br>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Логин</div>
+                    <div class="panel-body" data-bind="text: meLogin"></div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Факультет</div>
+                    <div class="panel-body" data-bind="text: meFaculty"></div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Дата регистрации</div>
+                    <div class="panel-body" data-bind="text: meReg"></div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Заявка на повышенную стипендию</div>
+                    <div class="panel-body" data-bind="text: meStip"></div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Роль пользователя</div>
+                    <div class="panel-body" data-bind="text: userRole"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,131 @@
+@(username: String)
+
+@admin("Администрирование", username,  1) {
+    <script type="text/javascript" src ='@routes.Assets.at("javascripts/admin_cab.js")'></script>
+    <h1 class="page-header">Статистика</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">Пользователи</div>
+                   <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Всего</th>
+                            <th data-bind="text: user_count"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Активные пользоваетелей</td>
+                            <td data-bind="text: user_1"></td>
+                        </tr>
+                        <tr>
+                            <td>Нективные пользоваетелей</td>
+                            <td data-bind="text: user_2"></td>
+                        </tr>
+                        <tr>
+                            <td>Обычных пользователей</td>
+                            <td data-bind="text: user_3"></td>
+                        </tr>
+                        <tr>
+                            <td>Модераторов</td>
+                            <td data-bind="text: user_4"></td>
+                        </tr>
+                        <tr>
+                            <td>Администраторов</td>
+                            <td data-bind="text: user_5"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">Достижения</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Всего</th>
+                            <th data-bind="text: ach_count"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Принятые на стипендию</td>
+                            <td data-bind="text: ach_1"></td>
+                        </tr>
+                        <tr>
+                            <td>Принятые на премию</td>
+                            <td data-bind="text: ach_2"></td>
+                        </tr>
+                        <tr>
+                            <td>Рассматриваются на стипендию</td>
+                            <td data-bind="text: ach_3"></td>
+                        </tr>
+                        <tr>
+                            <td>Рассматриваются на премию</td>
+                            <td data-bind="text: ach_4"></td>
+                        </tr>
+                        <tr>
+                            <td>Отклоненные на стипендию</td>
+                            <td data-bind="text: ach_5"></td>
+                        </tr>
+                        <tr>
+                            <td>Отклоненные на премию</td>
+                            <td data-bind="text: ach_6"></td>
+                        </tr>
+                        <tr>
+                            <td>Достижений на пользователя</td>
+                            <td>&asymp; <span data-bind="text: ach_7"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">Факультеты</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Всего</th>
+                            <th data-bind="text: fcl_count"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Стипендии</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Всего</th>
+                            <th data-bind="text: stip_count"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Категории стипендий</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Всего</th>
+                            <th data-bind="text: long_count"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
