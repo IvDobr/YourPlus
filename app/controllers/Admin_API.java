@@ -14,26 +14,28 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Admin_API extends Controller {
 
-    //Контроллеры 1 модуля дашборда
+    //Контроллеры 1 модуля дашборда (не используются в веб версии)
 
     public Result getGeneralInfoJSON() {
         ObjectNode result = Json.newObject();
         ObjectNode info = Json.newObject();
 
+        Role adminRole = Ebean.find(Role.class).where().like("roleTitle", "Администратор").findUnique();
         List<Role> roles = Ebean.find(Role.class).findList();
 
         info.put("user_count", Ebean.find(User.class).findRowCount());
         info.put("user_1", Ebean.find(User.class).where().eq("userStatus", true).findRowCount());
         info.put("user_2", Ebean.find(User.class).where().eq("userStatus", false).findRowCount());
-        info.put("user_3", roles.get(0).getUsers().size());
-        info.put("user_4", roles.get(1).getUsers().size());
-        info.put("user_5", Ebean.find(Administrator.class).findRowCount());
+        info.put("user_3", roles.get(1).getUsers().size());
+        info.put("user_4", roles.get(2).getUsers().size());
+        info.put("user_5", Ebean.find(User.class).where().eq("userRole", adminRole).findRowCount());
 
         info.put("ach_count", Ebean.find(Achievement.class).findRowCount());
         info.put("ach_1", Ebean.find(Achievement.class).where().ilike("achStipStatus", "1").findRowCount());
@@ -172,7 +174,10 @@ public class Admin_API extends Controller {
         try {
             User u = Ebean.find(User.class, request.findPath("userId").intValue());
 
-            u.setPass(request.findPath("editUserPass").textValue());
+            if (!request.findPath("editUserPass").textValue().equals("")) {
+                u.setPass(request.findPath("editUserPass").textValue());
+            }
+
             u.setUserFirstName(request.findPath("editUserFirstName").textValue());
             u.setUserLastName(request.findPath("editUserLastName").textValue());
             u.setUserStatus(request.findPath("editUserStatus").booleanValue());
@@ -355,6 +360,96 @@ public class Admin_API extends Controller {
                 result.put("status", "error");
                 return badRequest(result);
             }
+    }
+
+    public Result getUsersForModerationJSON(String search){
+        ObjectNode result = Json.newObject();
+        List<ObjectNode> usersListJSON;
+
+        if (search.equals("")) return ok(result);
+
+        usersListJSON = Ebean
+                .find(User.class)
+                .where()
+                .or(
+                        Expr.icontains("login", search),
+                        Expr.or(
+                                Expr.icontains("userLastName", search),
+                                Expr.icontains("userFirstName", search)
+                        )
+                )
+                .findList()
+                .stream()
+                .map(User::getUserInfoJSON)
+                .collect(Collectors.toList());
+
+        Integer bound = 10;
+        if (bound > usersListJSON.size()) bound = usersListJSON.size();
+
+        result.put("status","OK");
+        result.set("users", Json.toJson(usersListJSON.subList(0, bound)));
+        return ok(result);
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result getModersJSON() {
+        JsonNode request = request().body().asJson();
+        ObjectNode result = Json.newObject();
+        Faculty fcl = Ebean.find(Faculty.class, request.findPath("fclId").intValue());
+
+
+        if (!fcl.getModerations().isEmpty()) {
+            List<User> md_users = new ArrayList<>();
+            for (Moderation mdr : fcl.getModerations()) md_users.add(mdr.getMdUser());
+
+            List<ObjectNode> usersListJSON = md_users
+                    .stream()
+                    .map(User::getUserInfoJSON)
+                    .collect(Collectors.toList());
+
+            result.put("status", "OK");
+            result.set("users", Json.toJson(usersListJSON));
+        }
+
+        return ok(result);
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result addModerJSON() {
+        JsonNode request = request().body().asJson();
+        ObjectNode result = Json.newObject();
+        try {
+            User user = Ebean.find(User.class, request.findPath("userId").intValue());
+            Faculty fcl = Ebean.find(Faculty.class, request.findPath("fclId").intValue());
+            if (null != Ebean.find(Moderation.class).where().and(Expr.eq("mdUser", user), Expr.eq("mdFaculty", fcl)).findUnique()) {
+                return badRequest(result);
+            }
+            Ebean.save(new Moderation(user, fcl));
+            result.put("status","OK");
+            return ok(result);
+        } catch (Exception e) {
+            Logger.error("Невозможно создать отношение модерации!");
+            result.put("status", "error");
+            return badRequest(result);
+        }
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result removeModerJSON() {
+        JsonNode request = request().body().asJson();
+        ObjectNode result = Json.newObject();
+        try {
+            User user = Ebean.find(User.class, request.findPath("userId").intValue());
+            Faculty fcl = Ebean.find(Faculty.class, request.findPath("fclId").intValue());
+            Moderation mdr = Ebean.find(Moderation.class).where().and(Expr.eq("mdUser", user), Expr.eq("mdFaculty", fcl)).findUnique();
+            mdr.delete();
+            result.put("status","OK");
+            return ok(result);
+        } catch (Exception e) {
+            Logger.error("Невозможно удалить отношение модерации!");
+            result.put("status", "error");
+            return badRequest(result);
+        }
     }
 
 
@@ -557,6 +652,7 @@ public class Admin_API extends Controller {
         try {
             Ebean.save(new SubCategory(
                     request.findPath("newSubCatAlias").textValue(),
+                    request.findPath("newMark").asDouble(),
                     Ebean.find(Category.class).where().like("catTitle", request.findPath("newParentCat").textValue()).findUnique(),
                     request.findPath("newSubCatDefinition").textValue()
             ));
@@ -578,6 +674,7 @@ public class Admin_API extends Controller {
             SubCategory sc = Ebean.find(SubCategory.class, request.findPath("editSubCatId").intValue());
 
             sc.setSubCatAlias(request.findPath("editSubCatAlias").textValue());
+            sc.setMark(request.findPath("editMark").asDouble());
             sc.setSubCatDefinition(request.findPath("editSubCatDefinition").textValue());
             sc.setParentCat(Ebean.find(Category.class).where().like("catTitle", request.findPath("editParentCat").textValue()).findUnique());
 
@@ -641,7 +738,11 @@ public class Admin_API extends Controller {
                         controllers.routes.javascript.Admin_API.getAllSubCatsJSON(),
                         controllers.routes.javascript.Admin_API.addSubCatJSON(),
                         controllers.routes.javascript.Admin_API.editSubCatJSON(),
-                        controllers.routes.javascript.Admin_API.removeSubCatJSON()
+                        controllers.routes.javascript.Admin_API.removeSubCatJSON(),
+                        controllers.routes.javascript.Admin_API.getModersJSON(),
+                        controllers.routes.javascript.Admin_API.getUsersForModerationJSON(),
+                        controllers.routes.javascript.Admin_API.addModerJSON(),
+                        controllers.routes.javascript.Admin_API.removeModerJSON()
                 )
         );
     }

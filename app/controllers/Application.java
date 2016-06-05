@@ -1,7 +1,6 @@
 package controllers;
 
 import com.avaje.ebean.Ebean;
-import models.Administrator;
 import models.User;
 import play.libs.Crypto;
 import play.mvc.Controller;
@@ -12,46 +11,73 @@ import views.html.*;
 @Security.Authenticated(Authenticator.class)
 public class Application extends Controller {
 
-    private Boolean isUser() {
-        Crypto crypto = play.Play.application().injector().instanceOf(Crypto.class);
-        return null == Ebean.find(Administrator.class).where().ilike("login", crypto.decryptAES(session("current_user"))).findUnique();
+    private User getUser() {
+        return Ebean.find(
+                User.class, Integer.parseInt(play.Play.application().injector().instanceOf(Crypto.class).decryptAES(session("current_user"))));
     }
+    
+    /**
+     * 1 - Администратор
+     * 2 - Проверяющий
+     * 3 - Председатель профбюро
+     * 4 - Студент
+     * 5 - Наблюдатель
+     */
+    
+    public Result user() {
+        User u = getUser();
+        Integer role = u.getUserRole().getRoleId();
 
-    private String getName() {
-        Crypto crypto = play.Play.application().injector().instanceOf(Crypto.class);
-        if (isUser()) {
-            User user = Ebean.find( User.class, Integer.parseInt( crypto.decryptAES( session("current_user") ) ) );
-            return user.getUserFirstName() + " " + user.getUserLastName();
-        } else {
-            Administrator admin = Ebean.find(Administrator.class).where().ilike("login", crypto.decryptAES(session("current_user"))).findUnique();
-            return admin.getLogin();
+        switch (role) {
+            case 1:
+                return ok(admin_cab.render(u.getLogin(), new Stat_struct()));
+            case 2:
+                return ok(moderation.render( u ));
+            case 3:
+                return ok(student.render(u));
+            case 4:
+                return ok(student.render( u ));
+            case 5:
+                return TODO;
+            default:
+                return badRequest(notFound.render(""));
         }
     }
 
-    public Result student() {
-        if (isUser()) {
-            return ok(student.render( getName() ));
-        } else {
-            return redirect(controllers.routes.Application.admin());
+
+    public Result moder() {
+        User u = getUser();
+        Integer role = u.getUserRole().getRoleId();
+
+        switch (role) {
+            case 1:
+                return ok(admin_cab.render(u.getLogin(), new Stat_struct()));
+            case 2:
+                return ok(moderation.render( u ));
+            case 3:
+                return ok(moderation.render( u ));
+            case 4:
+                return ok(student.render( u ));
+            case 5:
+                return TODO;
+            default:
+                return badRequest(notFound.render(""));
         }
     }
 
-    public Result admin() {
-        if (!isUser()) return ok(admin_cab.render(getName()));
-        else return redirect(controllers.routes.Application.student());
-    }
 
     public Result dashboard(String page) {
-        if (!isUser()) {
-                 if (page.equals("users"))      return ok(admin_users.render( getName() ));
-            else if (page.equals("faculty"))    return ok(admin_faculties.render( getName() ));
-            else if (page.equals("cats"))       return ok(admin_categories.render( getName() ));
-            else if (page.equals("subcats"))    return ok(admin_subcats.render( getName() ));
-            else if (page.equals("roles"))      return ok(admin_roles.render( getName() ));
+        User u = getUser();
+        if (1 == u.getUserRole().getRoleId()) {
+                 if (page.equals("users"))      return ok(admin_users.render( u.getLogin() ));
+            else if (page.equals("faculty"))    return ok(admin_faculties.render( u.getLogin() ));
+            else if (page.equals("cats"))       return ok(admin_categories.render( u.getLogin() ));
+            else if (page.equals("subcats"))    return ok(admin_subcats.render( u.getLogin() ));
+            else if (page.equals("roles"))      return ok(admin_roles.render( u.getLogin() ));
             else if (page.equals("notes"))      return ok(notes.render(""));
             else                                return notFound(notFound.render(""));
         } else {
-            return redirect(controllers.routes.Application.student());
+            return redirect(controllers.routes.Application.user());
         }
     }
 }

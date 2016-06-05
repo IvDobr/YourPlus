@@ -24,6 +24,8 @@ public class SubCategory extends Model {
 
     private String subCatAlias;
 
+    private double mark;
+
     @ManyToOne
     private Category parentCat;
 
@@ -35,9 +37,10 @@ public class SubCategory extends Model {
     public SubCategory() {
     }
 
-    public SubCategory(String subCatAlias, Category parentCat, String subCatDefinition) {
+    public SubCategory(String subCatAlias, double mark, Category parentCat, String subCatDefinition) {
         this.subCatDefinition = subCatDefinition;
         this.subCatAlias = subCatAlias;
+        this.mark = mark;
         this.parentCat = parentCat;
     }
 
@@ -53,6 +56,14 @@ public class SubCategory extends Model {
 
     public String getSubCatDefinition() {
         return subCatDefinition;
+    }
+
+    public double getMark() {
+        return mark;
+    }
+
+    public void setMark(double mark) {
+        this.mark = mark;
     }
 
     public void setSubCatDefinition(String subCatDefinition) {
@@ -86,6 +97,7 @@ public class SubCategory extends Model {
 
         getSubCatInfoJSON.put("subCatId", this.subCatId);
         getSubCatInfoJSON.put("subCatAlias", this.subCatAlias);
+        getSubCatInfoJSON.put("mark", this.mark);
         getSubCatInfoJSON.put("subCatDefinition", this.subCatDefinition);
         getSubCatInfoJSON.put("parentCat", this.parentCat.getCatTitle());
         getSubCatInfoJSON.put("subCatAchesCount", this.achievements.size());

@@ -50,6 +50,7 @@ ViewModelRoles = function() {
     };
 
     self.addRole = function(){
+        if ("" == self.newRoleTitle()) ;
         jsRoutes.controllers.Admin_API.addRoleJSON().ajax({
             dataType    : 'json',
             contentType : 'application/json; charset=utf-8',
@@ -66,7 +67,7 @@ ViewModelRoles = function() {
 
     self.loadOneRole = function(role) {
         self.editRoleId(role.roleId);
-        self.editRoleTitle(role.roleTitle());;
+        self.editRoleTitle(role.roleTitle());
         $('#editRole').modal('show');
     };
 

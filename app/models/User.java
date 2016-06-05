@@ -2,6 +2,7 @@ package models;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.mindrot.jbcrypt.BCrypt;
 import play.data.validation.Constraints;
 import play.libs.Json;
 
@@ -31,7 +32,6 @@ public class User extends Model {
     @NotNull
     private String login;
 
-    @Constraints.Required
     private String userFirstName;
 
     private String userLastName;
@@ -76,7 +76,7 @@ public class User extends Model {
         this.login = login;
         this.userFirstName = userFirstName;
         this.userLastName = userLastName;
-        this.pass = pass;
+        this.pass = BCrypt.hashpw(pass, BCrypt.gensalt());
         this.userFaculty = userFaculty;
         this.userReg = new java.util.Date ();
         this.userStip = userStip;
@@ -123,7 +123,7 @@ public class User extends Model {
     }
 
     public void setPass(String pass) {
-        this.pass = pass;
+        this.pass = BCrypt.hashpw(pass, BCrypt.gensalt());
     }
 
     public Faculty getUserFaculty() {
@@ -179,6 +179,7 @@ public class User extends Model {
     public ObjectNode getUserInfoJSON() {
         ObjectNode getUserInfoJSON = Json.newObject();
 
+        getUserInfoJSON.put("userId", this.userId);
         getUserInfoJSON.put("userLogin", this.login);
         getUserInfoJSON.put("userFirstName", this.userFirstName);
         getUserInfoJSON.put("userLastName", this.userLastName);
@@ -198,8 +199,6 @@ public class User extends Model {
 
     public ObjectNode getFullUserInfoJSON() {
         ObjectNode getFullUserInfoJSON = this.getUserInfoJSON();
-        getFullUserInfoJSON.put("userPass", this.pass);
-        getFullUserInfoJSON.put("userId", this.userId);
         getFullUserInfoJSON.put("achCount", this.achievements.size());
         return getFullUserInfoJSON;
     }

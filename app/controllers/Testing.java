@@ -35,16 +35,14 @@ public class Testing {
 
     public void testDataBase(Boolean flag) {
 
-        Ebean.save(new User("stud", "Владимир", "Путин", "123", faculties.get(0), categories.get(0), true, roles.get(0)));
+        Ebean.save(new User("stud", "Иван", "Иванов", "123", faculties.get(1), categories.get(0), true, roles.get(2)));
         Logger.info("Добавлен тестовый студент");
 
-        Ebean.save(new User("user1", "Дмитрий", "Медведев", "123", faculties.get(1), categories.get(0), true, roles.get(0)));
-        Logger.info("Добавлен тестовый студент");
         if (flag) {
             UserRandomize(5000, 6000);
             Logger.info("Пользователи добавлены");
 
-            AchievesRandomize(47000, 56000);
+            AchievesRandomize(50000, 59000);
             Logger.info("Достижения добавлены");
 
             if (checkBender(0)) Logger.info("Пользователи рандомизированы");
@@ -89,7 +87,7 @@ public class Testing {
                     Fname,
                     Lname,
                     "userpass",
-                    faculties.get(intRandom( 0, faculties.size() - 1) ),
+                    faculties.get(intRandom( 1, faculties.size() - 1) ),
                     categories.get(intRandom( 0, categories.size() - 1) ),
                     intRandom(1, 100) <= 93,
                     getRoleRandom(5, 20, 1000))
@@ -157,12 +155,12 @@ public class Testing {
     }
 
     private Role getRoleRandom(int watchers, int moders, int all) {
-        if (roles.size()<3) throw new NullPointerException("Недостаточно ролей");
+        if (roles.size()<4) throw new NullPointerException("Недостаточно ролей");
         if (watchers > moders || moders > all) throw new IllegalArgumentException("Неверные вероятности");
         int prob = intRandom(1, all);
-        if (prob <= watchers) return roles.get(2);
-        else if (prob <= moders) return roles.get(1);
-        else return roles.get(0);
+        if (prob <= watchers) return roles.get(4);
+        else if (prob <= moders) return roles.get(2);
+        else return roles.get(3);
     }
 
     public static Date dateRandom(long lower_range) {

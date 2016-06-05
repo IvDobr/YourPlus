@@ -28,6 +28,8 @@ public class Achievement extends Model {
 
     private Date achDate;
 
+    private Date achDateAdd;
+
     @ManyToOne
     private SubCategory achCat;
 
@@ -50,6 +52,7 @@ public class Achievement extends Model {
         this.achOwner = achOwner;
         this.achTitle = achTitle;
         this.achDate = achDate;
+        this.achDateAdd = new java.util.Date ();
         this.achCat = achCat;
         this.achDop = achDop;
         this.achPremStatus = 0;
@@ -68,6 +71,7 @@ public class Achievement extends Model {
         this.achOwner = achOwner;
         this.achTitle = achTitle;
         this.achDate = achDate;
+        this.achDateAdd = new java.util.Date ();
         this.achCat = achCat;
         this.achComment = achComment;
         this.achDop = achDop;
@@ -149,6 +153,10 @@ public class Achievement extends Model {
         this.achStipStatus = achStipStatus;
     }
 
+    public Date getAchDateAdd() {
+        return achDateAdd;
+    }
+
     //Getters JSON
 
     public ObjectNode getAchInfoJSON() {
@@ -161,6 +169,7 @@ public class Achievement extends Model {
         getAchInfoJSON.put("achSubCat", this.achCat.getSubCatAlias());
         DateFormat date = new SimpleDateFormat("dd.MM.yyyy");
         getAchInfoJSON.put("achDate", date.format(this.achDate));
+        getAchInfoJSON.put("achDateAdd", date.format(this.achDateAdd));
         getAchInfoJSON.put("achComment", this.achComment);
         getAchInfoJSON.put("achDop", this.achDop);
         getAchInfoJSON.put("achPremStatus", this.achPremStatus);

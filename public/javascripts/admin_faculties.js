@@ -8,9 +8,22 @@ function Faculty (fclId, fclLongTitle, fclTitle, fclAdress, fclStudCount, fclMod
     self.fclModerCount        = ko.observable(fclModerCount);
 }
 
+function User (userId, userLogin, userName, userFaculty, userStatus, userRole) {
+    var self = this;
+    self.userId             = userId;
+    self.userLogin          = ko.observable(userLogin);
+    self.userName           = ko.observable(userName);
+    self.userFaculty        = ko.observable(userFaculty);
+    self.userStatus         = ko.observable(userStatus);
+    self.userRole           = ko.observable(userRole);
+}
+
 ViewModelUsers = function() {
 
     var self = this;
+
+    var currentFclId;
+    var userIds = [];
 
     self.faculties          = ko.observableArray([]);
     self.countFaculties     = ko.observable("");
@@ -32,6 +45,27 @@ ViewModelUsers = function() {
     self.fclModerCount      = ko.observable("");
 
     self.search             = ko.observable("");
+
+    self.usersList          = ko.observableArray([]);
+
+    self.userId             = ko.observable("");
+    self.userFirstName      = ko.observable("");
+    self.userLastName       = ko.observable("");
+    self.userStatus         = ko.observable("");
+    self.userLogin          = ko.observable("");
+    self.userFaculty        = ko.observable("");
+    self.userRole           = ko.observable("");
+
+    self.newUsersList       = ko.observableArray([]);
+    self.userSearch         = ko.observable("");
+
+    self.newUserId          = ko.observable("");
+    self.newUserFirstName   = ko.observable("");
+    self.newUserLastName    = ko.observable("");
+    self.newUserStatus      = ko.observable("");
+    self.newUserLogin       = ko.observable("");
+    self.newUserFaculty     = ko.observable("");
+    self.newUserRole        = ko.observable("");
 
     self.loadFaculties = function() {
         jsRoutes.controllers.Admin_API.getAllFacultiesJSON().ajax({
@@ -88,20 +122,114 @@ ViewModelUsers = function() {
         $('#editFaculty').modal('show');
     };
 
+    self.openModalModers = function(fcl) {
+        currentFclId = fcl.fclId;
+        self.loadModers();
+        $('#editModers').modal('show');
+    };
+
+    self.loadModers = function() {
+        jsRoutes.controllers.Admin_API.getModersJSON().ajax({
+            dataType    : 'json',
+            contentType : 'application/json; charset=utf-8',
+            data : JSON.stringify({fclId : currentFclId}),
+            success : function(data) {
+                self.usersList.removeAll();
+                userIds = [];
+                var o = data.users;
+                for (var i = 0; i < o.length; i++) {
+                    self.usersList.push(
+                        new User(
+                            o[i].userId,
+                            o[i].userLogin,
+                            o[i].userFirstName + " " + o[i].userLastName,
+                            o[i].userFaculty,
+                            o[i].userStatus,
+                            o[i].userRole
+                        )
+                    );
+                    userIds.push(o[i].userId);
+                }
+            },
+            error : function() {
+                console.log('Не могу отправить json запрос');
+            }
+        });
+    };
+
+    self.loadNewUsers = function() {
+        var sch = "";
+        if (self.userSearch().length >= 3) sch = self.userSearch;
+        jsRoutes.controllers.Admin_API.getUsersForModerationJSON().ajax({
+            dataType : 'json',
+            contentType : 'charset=utf-8',
+            data : {search: sch},
+            success : function(data) {
+                self.newUsersList.removeAll();
+                var o = data.users;
+                for (var i = 0; i < o.length; i++) {
+                    if (!userIds.includes(o[i].userId))
+                    self.newUsersList.push(
+                        new User(
+                            o[i].userId,
+                            o[i].userLogin,
+                            o[i].userFirstName + " " + o[i].userLastName,
+                            o[i].userFaculty,
+                            o[i].userStatus,
+                            o[i].userRole
+                        )
+                    );
+                }
+            },
+            error : function() {
+                console.log('Не могу отправить json запрос');
+            }
+        });
+    };
+
     self.editFaculty = function(){
         jsRoutes.controllers.Admin_API.editFacultyJSON().ajax({
             dataType    : 'json',
             contentType : 'application/json; charset=utf-8',
             data        : JSON.stringify({editFacultyId:        self.editFacultyId(),
-                                          editFacultyLongTitle:  self.editFacultyLongTitle(),
-                                          editFacultyTitle:      self.editFacultyTitle(),
-                                          editFacultyAdress:     self.editFacultyAdress()
+                editFacultyLongTitle:  self.editFacultyLongTitle(),
+                editFacultyTitle:      self.editFacultyTitle(),
+                editFacultyAdress:     self.editFacultyAdress()
             }),
             success : function(){
-                    self.reloadFaculties();
+                self.reloadFaculties();
             },
             error : function(){
                 alert("Не удалось изменить факультет");
+            }
+        });
+    };
+
+    self.addModer = function(user){
+        jsRoutes.controllers.Admin_API.addModerJSON().ajax({
+            dataType    : 'json',
+            contentType : 'application/json; charset=utf-8',
+            data        : JSON.stringify({fclId: currentFclId, userId: user.userId}),
+            success : function(){
+                    self.loadModers();
+            },
+            error : function(){
+                alert("Не удалось добавить отношение модерации");
+            }
+        });
+        self.loadModers();
+    };
+
+    self.removeModer = function(user){
+        jsRoutes.controllers.Admin_API.removeModerJSON().ajax({
+            dataType    : 'json',
+            contentType : 'application/json; charset=utf-8',
+            data        : JSON.stringify({fclId: currentFclId, userId: user.userId}),
+            success : function(){
+                self.loadModers();
+            },
+            error : function(){
+                alert("Не удалось удалить отношение модерации");
             }
         });
     };
@@ -135,6 +263,11 @@ ViewModelUsers = function() {
     ko.computed(function() {
         self.reloadFaculties();
         return self.search();
+    });
+
+    ko.computed(function() {
+        self.loadNewUsers();
+        return self.userSearch();
     });
 };
 

@@ -1,10 +1,10 @@
-function User (userId, userLogin, userFirstName, userLastName, userPass, userFaculty, userReg, userStip, userStatus, userRole, achCount) {
+function User (userId, userLogin, userFirstName, userLastName, userFaculty, userReg, userStip, userStatus, userRole, achCount) {
     var self = this;
     self.userId             = userId;
     self.userLogin          = ko.observable(userLogin);
     self.userFirstName      = ko.observable(userFirstName);
     self.userLastName       = ko.observable(userLastName);
-    self.userPass           = ko.observable(userPass);
+    //self.userPass           = ko.observable(userPass);
     self.userFaculty        = ko.observable(userFaculty);
     self.userReg            = ko.observable(userReg);
     self.userStip           = ko.observable(userStip);
@@ -93,7 +93,7 @@ ViewModelUsers = function() {
                             o[i].userLogin,
                             o[i].userFirstName,
                             o[i].userLastName,
-                            o[i].userPass,
+                            //o[i].userPass,
                             o[i].userFaculty,
                             o[i].userReg,
                             o[i].userStip,
@@ -154,7 +154,7 @@ ViewModelUsers = function() {
 
     self.loadOneUser = function(user) {
         self.editUserId(user.userId);
-        self.editUserPass(user.userPass());
+        //self.editUserPass(user.userPass());
         self.editUserFirstName(user.userFirstName());
         self.editUserLastName(user.userLastName());
         self.editUserStatus(user.userStatus()=="Активен");

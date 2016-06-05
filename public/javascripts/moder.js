@@ -1,9 +1,8 @@
-function Achiev(achId, achTitle, achDate, achDateAdd, achCat, achLongCat, achDop, achComment, achPrem, classPrem, achStip, classStip, canDel) {
+function Achiev(achId, achTitle, achDate, achCat, achLongCat, achDop, achComment, achPrem, classPrem, achStip, classStip, canDel) {
     var self = this;
     self.achId = achId;
     self.achTitle = ko.observable(achTitle);
     self.achDate = ko.observable(achDate);
-    self.achDateAdd = ko.observable(achDateAdd);
     self.achCat = ko.observable(achCat);
     self.achLongCat = ko.observable(achLongCat);
     self.achDop = ko.observable(achDop);
@@ -22,7 +21,6 @@ ViewModelAhieves = function() {
     self.achId = ko.observable(null);
     self.achTitle = ko.observable("");
     self.achDate = ko.observable("");
-    self.achDateAdd = ko.observable("");
     self.achDop = ko.observable("");
     self.achPrem = ko.observable("");
     self.achComment = ko.observable("");
@@ -53,8 +51,6 @@ ViewModelAhieves = function() {
 
     self.countUncheckedAches = ko.observable("");
 
-    self.newPass = ko.observable("");
-
     self.openModal = function(){
         $('#new-ach').modal('show');
     };
@@ -73,7 +69,7 @@ ViewModelAhieves = function() {
     };
 
     self.getUserInfo = function(){
-        jsRoutes.controllers.API.getUserInfoJSON().ajax({
+        jsRoutes.controllers.Moder_API.getUserInfoJSON().ajax({
             dataType : 'json',
             contentType : 'charset=utf-8',
             success : function(data) {
@@ -92,7 +88,7 @@ ViewModelAhieves = function() {
     };
 
     self.checkBender = function() {
-        jsRoutes.controllers.API.checkBenderJSON().ajax({
+        jsRoutes.controllers.Moder_API.checkBenderJSON().ajax({
             dataType : 'json',
             contentType : 'charset=utf-8',
             success : function() {
@@ -121,7 +117,7 @@ ViewModelAhieves = function() {
     self.newAchieve = function(){
         var achCat = $("li.AchCat_new.active").attr("id");
         var achSubCat = $("a.AchCat_new.active").attr("id");
-        jsRoutes.controllers.API.newAchievJSON().ajax({
+        jsRoutes.controllers.Moder_API.newAchievJSON().ajax({
             dataType    : 'json',
             contentType : 'application/json; charset=utf-8',
             data        : JSON.stringify({achTitle: self.achTitle(), achDate: self.achDate(), achSubCat: achSubCat, achDop: self.achDop()}),
@@ -142,7 +138,6 @@ ViewModelAhieves = function() {
         self.achTitle(ach.achTitle());
         var dStr = ach.achDate().split(".");
         self.achDate(dStr[2]+"-"+dStr[1]+"-"+dStr[0]);
-        self.achDateAdd(ach.achDateAdd());
         //$('#'+ach.achCat()).addClass("active");
         self.achDop(ach.achDop());
         self.achComment(ach.achComment());
@@ -169,7 +164,7 @@ ViewModelAhieves = function() {
     self.editAchieve = function(){
         var achCat = $("li.AchCat_see.active").attr("id");
         var achSubCat = $("a.AchCat_see.active").attr("id");
-        jsRoutes.controllers.API.editAchievJSON().ajax({
+        jsRoutes.controllers.Moder_API.editAchievJSON().ajax({
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify({achId: self.achId(), achTitle: self.achTitle(), achDate: self.achDate(), achSubCat: achSubCat, achDop: self.achDop()}),
@@ -193,7 +188,7 @@ ViewModelAhieves = function() {
     };
 
     self.setStip = function(stip){
-        jsRoutes.controllers.API.setStipJSON().ajax({
+        jsRoutes.controllers.Moder_API.setStipJSON().ajax({
             dataType : 'json',
             contentType : 'application/json; charset=utf-8',
             data : JSON.stringify({stip: stip}),
@@ -207,7 +202,7 @@ ViewModelAhieves = function() {
     };
 
     self.getStip = function(){
-        jsRoutes.controllers.API.getStipJSON().ajax({
+        jsRoutes.controllers.Moder_API.getStipJSON().ajax({
             dataType : 'json',
             contentType : 'charset=utf-8',
             success : function(data) {
@@ -230,7 +225,7 @@ ViewModelAhieves = function() {
                 dataJSON = JSON.stringify({achId: ach.achId});
             }
 
-            jsRoutes.controllers.API.deleteAchievJSON().ajax({
+            jsRoutes.controllers.Moder_API.deleteAchievJSON().ajax({
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
                 data: dataJSON,
@@ -245,7 +240,7 @@ ViewModelAhieves = function() {
     };
 
     self.loadAchievs = function(){
-        jsRoutes.controllers.API.getAllAchievsJSON().ajax({
+        jsRoutes.controllers.Moder_API.getAllAchievsJSON().ajax({
             contentType : 'charset=utf-8',
             data : {pageSize: parseInt(self.pageSize()), currentPage: parseInt(self.currentPage()), sortby: self.sorter, search: self.search},
             success : function(data) {
@@ -294,7 +289,7 @@ ViewModelAhieves = function() {
                             break;
                     }
                     self.achieves.push(new Achiev(
-                        o[i].achId, o[i].achTitle, o[i].achDate, o[i].achDateAdd, o[i].achCat, o[i].achLongCat, o[i].achDop, o[i].achComment, prem, cPrem, stip, cStip, canDel));
+                        o[i].achId, o[i].achTitle, o[i].achDate, o[i].achCat, o[i].achLongCat, o[i].achDop, o[i].achComment, prem, cPrem, stip, cStip, canDel));
                     console.log("Успешно обработан json запрос. Записи загружены");
                 }
             },
@@ -306,21 +301,6 @@ ViewModelAhieves = function() {
         });
     };
 
-    self.changePass = function() {
-        var dataJSON = JSON.stringify({newPass: self.newPass()});
-            jsRoutes.controllers.API.changePassJSON().ajax({
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                data: dataJSON,
-                success: function () {
-                    console.log('Пароль изменен');
-                },
-                error: function () {
-                    console.log('Не могу сменить пароль');
-                }
-            });
-    };
-
     self.reloadAchievs = function() {
         self.achieves.removeAll();
         self.loadAchievs();
@@ -330,7 +310,7 @@ ViewModelAhieves = function() {
     self.loadAchievs();
 
     self.generator = function(){
-        jsRoutes.controllers.API.generateAches().ajax({
+        jsRoutes.controllers.Moder_API.generateAches().ajax({
             contentType : 'charset=utf-8',
             data : {count: self.ct},
             success : function() {
@@ -343,7 +323,7 @@ ViewModelAhieves = function() {
     };
 
     self.delAches = function(){
-        jsRoutes.controllers.API.delAches().ajax({
+        jsRoutes.controllers.Moder_API.delAches().ajax({
             success : function() {
                 self.reloadAchievs();
             },

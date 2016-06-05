@@ -1,4 +1,4 @@
-@(username: String)
+@(user: User)
 
 @main("Личный кабинет студента") {
     <script xmlns="http://www.w3.org/1999/html">$('#high_stip').on('shown.bs.modal', function () {
@@ -7,6 +7,7 @@
     <script type="text/javascript" src="@routes.API.jsRoutes()"></script>
     <script type="text/javascript" src ='@routes.Assets.at("javascripts/student.js")'></script>
     @userInfoModal()
+    @userChangePass()
     <div class="navbar navbar-inverse">
         <div class="container">
             <div class="navbar-header">
@@ -15,7 +16,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#"><strong>Your plus v0.9 [beta]</strong></a>
+                <a class="navbar-brand" href="@routes.Authorization.index()"><strong>Your plus</strong></a>
             </div>
             <div class="navbar-collapse collapse navbar-inverse-collapse">
                 <ul class="nav navbar-nav">
@@ -41,12 +42,19 @@
                             <li><a href="#" data-bind="click: setStip.bind($data, '1')">Не подавать заявку</a></li>
                         </ul>
                     </li>
+                    @if(user.getUserRole.getRoleId != 4) {
+                        <li>
+                            <a href="@routes.Application.moder()">
+                                Проверка достижений <span class="badge" data-bind="text: countUncheckedAches"></span></a>
+                        </li>
+                    }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><strong>@username</strong><b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><strong>@user.getUserFirstName @user.getUserLastName</strong><b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" data-toggle="modal" data-target="#user_profile" data-bind="click: getUserInfo"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Профиль</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#user_change_pass" data-bind="click: getUserInfo"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Сменить пароль</a></li>
                             <li class="divider"></li>
                             <li><a href="@routes.Authorization.logOut()"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Выход</a></li>
                         </ul>
@@ -176,12 +184,19 @@
                 <button data-bind="click: checkBender" class="btn btn-warning" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Случайная проверка достижений"> <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                 </button>
             </div>
+
+            <div class="form-group pull-right" style="margin-right: 2%;">
+                <div class="well well-sm" style="margin-top: 1px; font-weight: 700">
+                    Тестовые функции <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                </div>
+            </div>
         </form>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th>Достижение</th>
                     <th>Дата</th>
+                    <th>Дата подачи</th>
                     <th>Категория</th>
                     <th>Статус на премию</th>
                     <th>Статус на стипендию</th>
@@ -192,6 +207,7 @@
                 <tr>
                     <td><a href="#" data-bind="text: achTitle, click: $root.seeAchieve"></a></td>
                     <td data-bind="text: achDate"></td>
+                    <td data-bind="text: achDateAdd"></td>
                     <td data-bind="text: achCat"></td>
                     <td><span data-bind="attr: {class: classPrem}, text: achPrem"></span></td>
                     <td><span data-bind="attr: {class: classStip}, text: achStip"></span></td>

@@ -16,6 +16,11 @@
         </div>
 
         <div class="form-group">
+            <label for="input">Баллы</label>
+            <input data-bind="textInput: newMark" type="number" class="form-control" id="input" placeholder="Количество баллов" required>
+        </div>
+
+        <div class="form-group">
             <label for="input">Расшифровка подкатегории</label>
             <input data-bind="textInput: newSubCatDefinition" type="text" class="form-control" id="input" placeholder="Расшифровка" required>
         </div>
@@ -50,6 +55,8 @@
                     </th>
                     <th>Псевдоним
                     </th>
+                    <th>Баллы
+                    </th>
                     <th>Полное наименование
                     </th>
                     <th>Категория
@@ -63,6 +70,7 @@
             <tbody data-bind="foreach: subCats">
                 <td data-bind="text: subCatId"></td>
                 <td data-bind="text: subCatAlias"></td>
+                <td data-bind="text: mark"></td>
                 <td data-bind="text: subCatDefinition"></td>
                 <td data-bind="text: parentCat"></td>
                 <td data-bind="text: subCatAchesCount"></td>
@@ -95,8 +103,13 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="input">Баллы</label>
+                        <input data-bind="textInput: editMark" type="number" class="form-control" id="input" placeholder="Количество баллов" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="input">Расшифровка подкатегории</label>
-                        <input data-bind="textInput: editSubCatDefinition" type="text" class="form-control" id="input" placeholder="Расшифровка" required>
+                        <textarea data-bind="textInput: editSubCatDefinition" class="form-control" id="input" placeholder="Расшифровка" required></textarea>
                     </div>
 
                     <div class="form-group">

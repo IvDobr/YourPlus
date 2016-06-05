@@ -8,20 +8,13 @@ create table achievements (
   ach_owner_user_id         integer,
   ach_title                 varchar(255),
   ach_date                  timestamp,
+  ach_date_add              timestamp,
   ach_cat_sub_cat_id        integer,
   ach_comment               VARCHAR(4095),
   ach_dop                   VARCHAR(4095),
   ach_prem_status           integer,
   ach_stip_status           integer,
   constraint pk_achievements primary key (ach_id))
-;
-
-create table admins (
-  admin_id                  integer not null,
-  login                     varchar(255) not null,
-  pass                      varchar(255),
-  constraint uq_admins_login unique (login),
-  constraint pk_admins primary key (admin_id))
 ;
 
 create table categories (
@@ -56,6 +49,7 @@ create table sub_categories (
   sub_cat_id                integer not null,
   sub_cat_definition        VARCHAR(4095),
   sub_cat_alias             varchar(255),
+  mark                      double,
   parent_cat_cat_id         integer,
   constraint pk_sub_categories primary key (sub_cat_id))
 ;
@@ -76,8 +70,6 @@ create table users (
 ;
 
 create sequence achievements_seq;
-
-create sequence admins_seq;
 
 create sequence categories_seq;
 
@@ -116,8 +108,6 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 drop table if exists achievements;
 
-drop table if exists admins;
-
 drop table if exists categories;
 
 drop table if exists faculties;
@@ -133,8 +123,6 @@ drop table if exists users;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists achievements_seq;
-
-drop sequence if exists admins_seq;
 
 drop sequence if exists categories_seq;
 

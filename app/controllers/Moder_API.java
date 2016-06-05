@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class API extends Controller {
+public class Moder_API extends Controller {
 
     private User getUser() {
         Crypto crypto = play.Play.application().injector().instanceOf(Crypto.class);
@@ -45,44 +45,8 @@ public class API extends Controller {
         } catch (ParseException exx) {
             Logger.error("Ошибка 2 в преобразовании даты: " +
                     exx.getMessage());
-            return new java.util.Date();
+            return new Date();
         }
-    }
-
-    public Result checkBenderJSON(){
-        ObjectNode result = Json.newObject();
-        if ( Testing.checkBender( getUser().getUserId() ) ) {
-            result.put("status","OK");
-            return ok(result);
-        }
-        else {
-            result.put("status", "error");
-            return badRequest(result);
-        }
-    }
-
-    @BodyParser.Of(BodyParser.Json.class)
-    public Result setStipJSON() {
-        JsonNode request = request().body().asJson();
-        ObjectNode result = Json.newObject();
-
-        if (!getUser().getUserStatus()) return badRequest();
-
-        try{
-            User u = getUser();
-            u.setUserStip(Ebean.find(Category.class, request.findPath("stip").asInt()));
-            u.update();
-            result.put("status","OK");
-            return ok(result);
-        } catch(Exception e) {
-            Logger.error("Не удалось сохранить стипендию я" + e.getMessage());
-            result.put("status", "error");
-            return badRequest(result);
-        }
-    }
-
-    public Result getStipJSON(){
-        return ok(Json.newObject().put("stip", getUser().getUserStip().getCatTitle() ));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -92,12 +56,14 @@ public class API extends Controller {
 
         if (!getUser().getUserStatus()) return badRequest();
 
-//        Logger.debug(request.toString());
-//        Logger.debug(getUser().getPass());
-//        Logger.debug(request.findPath("achTitle").textValue());
-//        Logger.debug(JsonToDate(request.findPath("achDate").textValue()).toString());
-//        Logger.debug(request.findPath("subCatAlias").textValue());
-//        Logger.debug(request.findPath("achDop").textValue());
+        Logger.debug(request.toString());
+        Logger.debug(getUser().getPass());
+        Logger.debug(request.findPath("achTitle").textValue());
+        Logger.debug(JsonToDate(request.findPath("achDate").textValue()).toString());
+        Logger.debug(request.findPath("subCatAlias").textValue());
+        Logger.debug(request.findPath("achDop").textValue());
+
+
 
         try{
             Achievement achievement = new Achievement(
@@ -204,32 +170,6 @@ public class API extends Controller {
         }
     }
 
-    public Result getUserInfoJSON(){
-        ObjectNode result = Json.newObject();
-        result.put("status","OK");
-        result.set("user", getUser().getUserInfoJSON());
-        return ok(result);
-    }
-
-    public Result generateAches(int count){
-        Testing.achievesToUserRND(count, getUser());
-        ObjectNode result = Json.newObject();
-        result.put("status","OK");
-        return ok(result);
-    }
-
-    public Result delAches(){
-        ObjectNode result = Json.newObject();
-        List<Achievement> aches = Ebean.find(Achievement.class).where().eq("achOwner", getUser()).findList();
-        try{
-            for(Achievement a: aches) a.delete();
-            result.put("status","OK");
-            return ok(result);
-        } catch(Exception e) {
-            result.put("status", "error");
-            return badRequest(result);
-        }
-    }
 
     /**
      * 1 - Администратор
@@ -256,7 +196,6 @@ public class API extends Controller {
                                 Expr.in("achOwner", users)
                         ).findList();
                 return ok(aches.size()+"");
-
             case 2:
                 return TODO;
             default:
@@ -264,40 +203,15 @@ public class API extends Controller {
         }
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
-    public Result changePassJSON(){
-        JsonNode request = request().body().asJson();
-        ObjectNode result = Json.newObject();
-        try {
-            User user = getUser();
-            user.setPass(request.findPath("newPass").textValue());
-            Ebean.save(user);
-            result.put("status","OK");
-            return ok(result);
-        }
-        catch (Exception e) {
-            Logger.error("Невозможно изменить пароль! " + e.getMessage());
-            result.put("status", "error");
-            return badRequest(result);
-        }
-    }
-
     public Result jsRoutes() {
         response().setContentType("text/javascript");
         return ok(
                 Routes.javascriptRouter("jsRoutes",
-                        controllers.routes.javascript.API.checkBenderJSON(),
-                        controllers.routes.javascript.API.setStipJSON(),
-                        controllers.routes.javascript.API.getStipJSON(),
-                        controllers.routes.javascript.API.getAllAchievsJSON(),
-                        controllers.routes.javascript.API.deleteAchievJSON(),
-                        controllers.routes.javascript.API.editAchievJSON(),
-                        controllers.routes.javascript.API.newAchievJSON(),
-                        controllers.routes.javascript.API.getUserInfoJSON(),
-                        controllers.routes.javascript.API.changePassJSON(),
-                        controllers.routes.javascript.API.generateAches(),
-                        controllers.routes.javascript.API.delAches(),
-                        controllers.routes.javascript.API.getCountAches()
+                        routes.javascript.Moder_API.getAllAchievsJSON(),
+                       // routes.javascript.Moder_API.deleteAchievJSON(),
+                        //routes.javascript.Moder_API.editAchievJSON(),
+                        routes.javascript.API.getUserInfoJSON(),
+                        routes.javascript.API.getCountAches()
                 )
         );
     }

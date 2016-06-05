@@ -1,84 +1,113 @@
-@(username: String)
+@(username: String, data: Stat_struct)
 
 @admin("Администрирование", username,  1) {
-    <script type="text/javascript" src ='@routes.Assets.at("javascripts/admin_cab.js")'></script>
     <h1 class="page-header">Статистика</h1>
+
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">Пользователи</div>
+
                    <table class="table">
                     <thead>
                         <tr>
                             <th>Всего</th>
-                            <th data-bind="text: user_count"></th>
+                            <th>@data.all_users</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Активные пользоваетелей</td>
-                            <td data-bind="text: user_1"></td>
+                            <td>Активные</td>
+                            <td>@data.active_users</td>
                         </tr>
                         <tr>
-                            <td>Нективные пользоваетелей</td>
-                            <td data-bind="text: user_2"></td>
+                            <td>Не активные</td>
+                            <td>@data.nonactive_users</td>
                         </tr>
                         <tr>
-                            <td>Обычных пользователей</td>
-                            <td data-bind="text: user_3"></td>
+                            <td><strong>Роли пользователей:</strong></td>
+                            <td><strong>@data.users_roles</strong></td>
                         </tr>
-                        <tr>
-                            <td>Модераторов</td>
-                            <td data-bind="text: user_4"></td>
-                        </tr>
-                        <tr>
-                            <td>Администраторов</td>
-                            <td data-bind="text: user_5"></td>
-                        </tr>
+                        @for((k, v) <- data.users_roles_list) {
+                            <tr>
+                                <td>&mdash; @k</td>
+                                <td><abbr title="Пользователей в этой роли">@v</abbr></td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div class="col-md-4">
+
             <div class="panel panel-default">
                 <div class="panel-heading">Достижения</div>
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Всего</th>
-                            <th data-bind="text: ach_count"></th>
+                            <th>@data.all_achievements</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Принятые на стипендию</td>
-                            <td data-bind="text: ach_1"></td>
+                            <td>На премию:</td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td>Принятые на премию</td>
-                            <td data-bind="text: ach_2"></td>
+                            <td>&mdash; Принято</td>
+                            <td>@data.ach_on_prem.get(0)</td>
                         </tr>
                         <tr>
-                            <td>Рассматриваются на стипендию</td>
-                            <td data-bind="text: ach_3"></td>
+                            <td>&mdash; На рассмотрении</td>
+                            <td>@data.ach_on_prem.get(1)</td>
                         </tr>
                         <tr>
-                            <td>Рассматриваются на премию</td>
-                            <td data-bind="text: ach_4"></td>
+                            <td>&mdash; Отклонено</td>
+                            <td>@data.ach_on_prem.get(2)</td>
                         </tr>
                         <tr>
-                            <td>Отклоненные на стипендию</td>
-                            <td data-bind="text: ach_5"></td>
+                            <td>На стипендию:</td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td>Отклоненные на премию</td>
-                            <td data-bind="text: ach_6"></td>
+                            <td>&mdash; Принято</td>
+                            <td>@data.ach_on_stip.get(0)</td>
                         </tr>
+                        <tr>
+                            <td>&mdash; На рассмотрении</td>
+                            <td>@data.ach_on_stip.get(1)</td>
+                        </tr>
+                        <tr>
+                            <td>&mdash; Отклонено</td>
+                            <td>@data.ach_on_stip.get(2)</td>
+                        </tr>
+
                         <tr>
                             <td>Достижений на пользователя</td>
-                            <td>&asymp; <span data-bind="text: ach_7"></span></td>
+                            <td>&asymp; @data.achievements_per_user</td>
                         </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Стипендии</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Всего</th>
+                            <th>@data.all_cats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for((key, value) <- data.cats) {
+                        <tr>
+                            <td>&mdash; @key</td>
+                            <td><abbr title="Количество подкатегорий">@value</abbr></td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
@@ -91,41 +120,32 @@
                     <thead>
                         <tr>
                             <th>Всего</th>
-                            <th data-bind="text: fcl_count"></th>
+                            <th>@data.all_fcl</th>
                         </tr>
                     </thead>
                     <tbody>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">Стипендии</div>
-                <table class="table">
-                    <thead>
+                    @for((key, value) <- data.fcls) {
                         <tr>
-                            <th>Всего</th>
-                            <th data-bind="text: stip_count"></th>
+                            <td>@key</td>
+                            <td></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">Категории стипендий</div>
-                <table class="table">
-                    <thead>
                         <tr>
-                            <th>Всего</th>
-                            <th data-bind="text: long_count"></th>
+                            <td>&mdash; Студентов</td>
+                            <td>@value.get(0)</td>
                         </tr>
-                    </thead>
-                    <tbody>
+                        <tr>
+                            <td>&mdash; Достижений</td>
+                            <td>@value.get(1)</td>
+                        </tr>
+                        <tr>
+                            <td>&mdash; Модераторов</td>
+                            <td>@value.get(2)</td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 }
